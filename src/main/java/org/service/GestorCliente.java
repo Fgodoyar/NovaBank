@@ -22,7 +22,7 @@ public class GestorCliente {
 
     public void insertarCliente(String nombre, String apellidos, String dni, String email,
                                 String telefono){
-        if (verificarDNI(dni) && verificarEmail(email) && verificarTelefono(telefono)){
+        if (verificarDNI(dni) && verificarEmail(email) && verificarTelefono(telefono) && confirmarEmail(email)){
             return;
         }
 
