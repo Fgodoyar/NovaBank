@@ -1,8 +1,6 @@
 package org.ui;
 
-import org.service.GestorCliente;
-
-import static org.ui.Menu.*;
+import static org.ui.Menu.menuPrincipal;
 
 /**
  * Clase principal

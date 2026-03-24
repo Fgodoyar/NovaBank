@@ -51,9 +51,17 @@ public class GestorCliente {
      */
     public void insertarCliente(String nombre, String apellidos, String dni, String email,
                                 String telefono){
-        if (verificarDNI(dni) || verificarEmail(email) || verificarTelefono(telefono) || !confirmarEmail(email)){
-            System.out.println("No se puede crear el usuario.");
-            return;
+        if (!verificarDNI(dni)){
+            System.out.println("ERROR: El DNI ingresado está en uso.");
+        }
+        if(!verificarEmail(email)){
+            System.out.println("ERROR: El email ya está en uso.");
+        }
+        if(!verificarTelefono(telefono)){
+            System.out.println("ERROR: El telefono ya está en uso.");
+        }
+        if (confirmarEmail(email)){
+            System.out.println("ERROR: El email proporcionado es inválido.");
         }
         Cliente cliente = new Cliente();
         LocalDate fecha_creacion = LocalDate.now();
@@ -169,6 +177,9 @@ public class GestorCliente {
      * Método para listar todos los clientes dentro de la memoria.
      */
     public void listarClientes(){
+        if (clientes.isEmpty()){
+            System.out.println("ERROR: No hay usuarios que visualizar.");
+        }
         System.out.printf("|%4s |%-15s |%-10s |%-20s |%-10s|\n", "ID", "Nombre", "DNI", "Email", "Teléfono");
         System.out.println("------|----------------|-----------|---------------------|----------|");
         clientes.forEach((id, cliente) -> {
