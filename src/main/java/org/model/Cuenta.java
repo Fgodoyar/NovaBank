@@ -36,7 +36,7 @@ public class Cuenta {
      * @param saldo
      * @param fecha_creacion
      */
-    public Cuenta(long id, String numero_cuenta, String titular, long cliente_id, BigDecimal saldo, LocalDate fecha_creacion) {
+    public Cuenta(String numero_cuenta, String titular, long cliente_id, BigDecimal saldo, LocalDate fecha_creacion) {
         this.id = contadorCuentas++;
         this.numero_cuenta = numero_cuenta;
         this.titular = titular;

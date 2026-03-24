@@ -5,21 +5,29 @@ import org.model.Movimiento;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Clase GestorOperaciones, encargada de gestionar los métodos de operaciones.
  */
 public class GestorOperaciones {
-    private List<Movimiento> movimientos;
+    private Map<Long, Movimiento> movimientos;
     private GestorCuenta gestorCuenta = new GestorCuenta();
 
     /**
      * Constructor vacío
      */
     public GestorOperaciones() {
-        this.movimientos = new ArrayList<>();
+        this.movimientos = new HashMap<>();
+    }
+
+    /**
+     * Obtiene el mapa de los movimientos
+     * @return
+     */
+    public Map<Long, Movimiento> getMovimientos() {
+        return movimientos;
     }
 
     /**
@@ -32,11 +40,16 @@ public class GestorOperaciones {
      */
     public void depositarDinero(String numeroCuenta, BigDecimal cantidad){
         for(Cuenta cuenta : gestorCuenta.getCuentas().values()){
-            if (cuenta.getNumero_cuenta().equals(numeroCuenta) || cantidad.compareTo(BigDecimal.ZERO) > 0){
-                BigDecimal nuevoSueldo = cuenta.getSaldo().add(cantidad);
-                cuenta.setSaldo(nuevoSueldo);
-                movimientos.add(new Movimiento(cuenta.getId(), "DEPÓSITO", cantidad.plus(), LocalDate.now()));
+            if (!cuenta.getNumero_cuenta().equals(numeroCuenta)){
+                System.out.println("ERROR: No se ha encontrado el número de cuenta en la base de datos.");
             }
+            if(!(cantidad.compareTo(BigDecimal.ZERO) > 0)){
+                System.out.println("ERROR: La cantidad debe ser superior a 0 para poder depositar.");
+            }
+            BigDecimal nuevoSueldo = cuenta.getSaldo().add(cantidad);
+            cuenta.setSaldo(nuevoSueldo);
+            Movimiento deposito = new Movimiento(cuenta.getId(), "DEPÓSITO", cantidad.plus(), LocalDate.now());
+            movimientos.put(deposito.getId(), deposito);
         }
     }
 
@@ -52,12 +65,19 @@ public class GestorOperaciones {
      */
     public void retirarDinero(String numeroCuenta, BigDecimal cantidad){
         for(Cuenta cuenta : gestorCuenta.getCuentas().values()){
-            if(cuenta.getNumero_cuenta().equals(numeroCuenta) || cantidad.compareTo(BigDecimal.ZERO) > 0
-            || cuenta.getSaldo().compareTo(cantidad) > 0){
-                BigDecimal nuevoSueldo = cuenta.getSaldo().subtract(cantidad);
-                cuenta.setSaldo(nuevoSueldo);
-                movimientos.add(new Movimiento(cuenta.getId(), "RETIRO", cantidad.negate(), LocalDate.now()));
+            if(!cuenta.getNumero_cuenta().equals(numeroCuenta)){
+                System.out.println("ERROR: No se ha encontrado el número de cuenta en la base de datos.");
             }
+            if(!(cantidad.compareTo(BigDecimal.ZERO) > 0)){
+                System.out.println("ERROR: La cantidad debe ser superior a 0 para poder retirar.");
+            }
+            if(!(cuenta.getSaldo().compareTo(cantidad) > 0)){
+                System.out.println("ERROR: Saldo insuficiente.");
+            }
+            BigDecimal nuevoSueldo = cuenta.getSaldo().subtract(cantidad);
+            cuenta.setSaldo(nuevoSueldo);
+            Movimiento retirar = new Movimiento(cuenta.getId(), "RETIRO", cantidad.negate(), LocalDate.now());
+            movimientos.put(retirar.getId(), retirar);
         }
     }
 
@@ -76,22 +96,31 @@ public class GestorOperaciones {
      */
     public void transaccion(String numeroCuentaOrigen, String numeroCuentaDestino, BigDecimal cantidad){
         for(Cuenta cuenta : gestorCuenta.getCuentas().values()){
-            if(!numeroCuentaOrigen.equals(numeroCuentaDestino) || cuenta.getNumero_cuenta().equals(numeroCuentaOrigen) ||
-            cuenta.getNumero_cuenta().equals(numeroCuentaDestino) || cantidad.compareTo(BigDecimal.ZERO) > 0 || 
-            cuenta.getSaldo().compareTo(cantidad) > 0){
-                Cuenta cuentaOrigen = gestorCuenta.getCuentas().get(numeroCuentaOrigen);
-                Cuenta cuentaDestino = gestorCuenta.getCuentas().get(numeroCuentaDestino);
-
-                retirarDinero(cuentaOrigen.getNumero_cuenta(), cantidad);
-                depositarDinero(cuentaDestino.getNumero_cuenta(), cantidad);
-
-                movimientos.add(new Movimiento(cuentaOrigen.getId(), "TRANSFERENCIA_SALIENTE", cantidad.negate(), LocalDate.now()));
-                movimientos.add(new Movimiento(cuentaDestino.getId(), "TRANSFERENCIA_ENTRANTE", cantidad.plus(), LocalDate.now()));
-
-                System.out.println("Transferencia realizada correctamente.");
-                System.out.println("Cuenta Origen: " + cuentaOrigen.getNumero_cuenta() + " -> " + cantidad.negate());
-                System.out.println("Cuenta Destino: " + cuentaDestino.getNumero_cuenta() + " -> " + cantidad.plus());
+            if(numeroCuentaOrigen.equals(numeroCuentaDestino)){
+                System.out.println("ERROR: No se puede transferir dinero sobre la misma cuenta.");
             }
+            if(!cuenta.getNumero_cuenta().equals(numeroCuentaOrigen) || !cuenta.getNumero_cuenta().equals(numeroCuentaDestino)){
+                System.out.println("ERROR: No se ha encontrado el número de cuenta en la base de datos.");
+            }
+            if (!(cantidad.compareTo(BigDecimal.ZERO) > 0)){
+                System.out.println("ERROR: La cantidad debe ser mayor que 0.");
+            }
+            if(!(cuenta.getSaldo().compareTo(cantidad) > 0)){
+                System.out.println("ERROR: Saldo insuficiente.");
+            }
+            Cuenta cuentaOrigen = gestorCuenta.getCuentas().get(numeroCuentaOrigen);
+            Cuenta cuentaDestino = gestorCuenta.getCuentas().get(numeroCuentaDestino);
+
+            retirarDinero(cuentaOrigen.getNumero_cuenta(), cantidad);
+            depositarDinero(cuentaDestino.getNumero_cuenta(), cantidad);
+            Movimiento transferencia_saliente = new Movimiento(cuentaOrigen.getId(), "TRANSFERENCIA_SALIENTE", cantidad.negate(), LocalDate.now());
+            movimientos.put(transferencia_saliente.getId(), transferencia_saliente);
+            Movimiento transferencia_entrante = new Movimiento(cuentaDestino.getId(), "TRANSFERENCIA_ENTRANTE", cantidad.plus(), LocalDate.now());
+            movimientos.put(transferencia_entrante.getId(), transferencia_entrante);
+
+            System.out.println("Transferencia realizada correctamente.");
+            System.out.println("Cuenta Origen: " + cuentaOrigen.getNumero_cuenta() + " -> " + cantidad.negate());
+            System.out.println("Cuenta Destino: " + cuentaDestino.getNumero_cuenta() + " -> " + cantidad.plus());
         }
     }
 }
