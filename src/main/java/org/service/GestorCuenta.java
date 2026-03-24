@@ -3,6 +3,7 @@ package org.service;
 import org.model.Cuenta;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -18,7 +19,17 @@ public class GestorCuenta {
     /**
      * Constructor vacío
      */
-    public GestorCuenta() {}
+    public GestorCuenta() {
+        this.cuentas = new HashMap<>();
+    }
+
+    /**
+     * Obtiene el mapa de las cuentas.
+     * @return mapa de cuentas
+     */
+    public Map<String, Cuenta> getCuentas() {
+        return cuentas;
+    }
 
     /**
      * Método que se encarga de generar un IBAN
