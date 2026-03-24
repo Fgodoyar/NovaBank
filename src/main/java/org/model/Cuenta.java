@@ -29,7 +29,6 @@ public class Cuenta {
 
     /**
      * Constructor de la clase
-     * @param id
      * @param numero_cuenta
      * @param titular
      * @param cliente_id
