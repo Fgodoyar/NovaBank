@@ -1,7 +1,9 @@
 package org.service;
 
+import org.model.Cliente;
 import org.model.Cuenta;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Map;
 
@@ -12,6 +14,7 @@ public class GestorCuenta {
     /**
      * Atributos de la clase.
      */
+    private GestorCliente gestorClientes = new GestorCliente();
     private Map<String, Cuenta> cuentas;
     private static int contador = 0;
 
@@ -32,6 +35,33 @@ public class GestorCuenta {
         String iban = "ES91210000" + numero;
 
         return iban;
+    }
+
+    /**
+     * Método para crear una cuenta bancaria.
+     * Utiliza el mapa de clientes para validar si el ID existe en ese mapa.
+     * En caso contrario, imprimeirá un error por consola.
+     * @param id_titular
+     */
+    public void crearCuenta(int id_titular){
+        for(Cliente cliente : gestorClientes.getClientes().values()){
+            if(cliente.getId() == id_titular){
+                Cuenta cuenta = new Cuenta();
+                String iban = generarIBAN();
+                LocalDate fecha_creacion = LocalDate.now();
+                cuenta.setNumero_cuenta(iban);
+                cuenta.setCliente_id(cliente.getId());
+                cuenta.setTitular(cliente.getNombre() + " " + cliente.getApellidos());
+                cuenta.setSaldo(BigDecimal.ZERO);
+                cuenta.setFecha_creacion(fecha_creacion);
+
+                cuentas.put(cuenta.getNumero_cuenta(), cuenta);
+                System.out.println("Cuenta creada correctamente.");
+                System.out.println("Número de cuenta: " + cuenta.getNumero_cuenta());
+            }else {
+                System.out.println("ERROR: El ID no está registrado en la base de datos.");
+            }
+        }
     }
 
     /**

@@ -24,6 +24,14 @@ public class GestorCliente {
     }
 
     /**
+     * Obtiene un mapa de clientes.
+     * @return mapa de clientes
+     */
+    public Map<Long, Cliente> getClientes() {
+        return clientes;
+    }
+
+    /**
      * Método principal para insertar datos.
      * @param id
      * @param cliente
