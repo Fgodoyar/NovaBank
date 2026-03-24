@@ -27,7 +27,6 @@ public class Movimiento {
 
     /**
      * Constructor de la clase
-     * @param id
      * @param id_cuenta
      * @param tipo
      * @param cantidad
