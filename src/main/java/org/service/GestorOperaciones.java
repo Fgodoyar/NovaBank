@@ -2,33 +2,26 @@ package org.service;
 
 import org.model.Cuenta;
 import org.model.Movimiento;
+import org.repositorio.Repositorio;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Clase GestorOperaciones, encargada de gestionar los métodos de operaciones.
  */
 public class GestorOperaciones {
-    private Map<Long, Movimiento> movimientos;
-    private GestorCuenta gestorCuenta = new GestorCuenta();
+    private Repositorio repositorio;
+    private GestorCuenta gestorCuenta;
 
     /**
-     * Constructor vacío
+     * Constructor de la clase.
      */
-    public GestorOperaciones() {
-        this.movimientos = new HashMap<>();
+    public GestorOperaciones(Repositorio repositorio, GestorCuenta gestorCuenta) {
+        this.repositorio = repositorio;
+        this.gestorCuenta = gestorCuenta;
     }
 
-    /**
-     * Obtiene el mapa de los movimientos
-     * @return
-     */
-    public Map<Long, Movimiento> getMovimientos() {
-        return movimientos;
-    }
 
     /**
      * Método encargado de depositar dinero en una cuenta
@@ -39,7 +32,7 @@ public class GestorOperaciones {
      * @param cantidad
      */
     public void depositarDinero(String numeroCuenta, BigDecimal cantidad){
-        for(Cuenta cuenta : gestorCuenta.getCuentas().values()){
+        for(Cuenta cuenta : repositorio.cuentas.values()){
             if (!cuenta.getNumero_cuenta().equals(numeroCuenta)){
                 System.out.println("ERROR: No se ha encontrado el número de cuenta en la base de datos.");
             }
@@ -49,7 +42,7 @@ public class GestorOperaciones {
             BigDecimal nuevoSueldo = cuenta.getSaldo().add(cantidad);
             cuenta.setSaldo(nuevoSueldo);
             Movimiento deposito = new Movimiento(cuenta.getId(), "DEPÓSITO", cantidad.plus(), LocalDate.now());
-            movimientos.put(deposito.getId(), deposito);
+            repositorio.movimientos.put(deposito.getId(), deposito);
         }
     }
 
@@ -64,7 +57,7 @@ public class GestorOperaciones {
      * @param cantidad
      */
     public void retirarDinero(String numeroCuenta, BigDecimal cantidad){
-        for(Cuenta cuenta : gestorCuenta.getCuentas().values()){
+        for(Cuenta cuenta : repositorio.cuentas.values()){
             if(!cuenta.getNumero_cuenta().equals(numeroCuenta)){
                 System.out.println("ERROR: No se ha encontrado el número de cuenta en la base de datos.");
             }
@@ -77,7 +70,7 @@ public class GestorOperaciones {
             BigDecimal nuevoSueldo = cuenta.getSaldo().subtract(cantidad);
             cuenta.setSaldo(nuevoSueldo);
             Movimiento retirar = new Movimiento(cuenta.getId(), "RETIRO", cantidad.negate(), LocalDate.now());
-            movimientos.put(retirar.getId(), retirar);
+            repositorio.movimientos.put(retirar.getId(), retirar);
         }
     }
 
@@ -95,7 +88,7 @@ public class GestorOperaciones {
      * @param cantidad
      */
     public void transaccion(String numeroCuentaOrigen, String numeroCuentaDestino, BigDecimal cantidad){
-        for(Cuenta cuenta : gestorCuenta.getCuentas().values()){
+        for(Cuenta cuenta : repositorio.cuentas.values()){
             if(numeroCuentaOrigen.equals(numeroCuentaDestino)){
                 System.out.println("ERROR: No se puede transferir dinero sobre la misma cuenta.");
             }
@@ -114,9 +107,9 @@ public class GestorOperaciones {
             retirarDinero(cuentaOrigen.getNumero_cuenta(), cantidad);
             depositarDinero(cuentaDestino.getNumero_cuenta(), cantidad);
             Movimiento transferencia_saliente = new Movimiento(cuentaOrigen.getId(), "TRANSFERENCIA_SALIENTE", cantidad.negate(), LocalDate.now());
-            movimientos.put(transferencia_saliente.getId(), transferencia_saliente);
+            repositorio.movimientos.put(transferencia_saliente.getId(), transferencia_saliente);
             Movimiento transferencia_entrante = new Movimiento(cuentaDestino.getId(), "TRANSFERENCIA_ENTRANTE", cantidad.plus(), LocalDate.now());
-            movimientos.put(transferencia_entrante.getId(), transferencia_entrante);
+            repositorio.movimientos.put(transferencia_entrante.getId(), transferencia_entrante);
 
             System.out.println("Transferencia realizada correctamente.");
             System.out.println("Cuenta Origen: " + cuentaOrigen.getNumero_cuenta() + " -> " + cantidad.negate());

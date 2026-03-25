@@ -2,6 +2,7 @@ package org.repositorio;
 
 import org.model.Cliente;
 import org.model.Cuenta;
+import org.model.Movimiento;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,7 +16,7 @@ public class Repositorio {
      */
     public final Map<Long, Cliente> clientes = new HashMap<>();
     public final Map<String, Cuenta> cuentas = new HashMap<>();
-    //public final Map<Long, Movimiento> movimientos = new HashMap<>();
+    public final Map<Long, Movimiento> movimientos = new HashMap<>();
 
     /**
      * Método que guarda un cliente a través del objeto cliente.
