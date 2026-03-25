@@ -2,10 +2,12 @@ package org.ui;
 
 import org.repositorio.Repositorio;
 import org.service.GestorCliente;
+import org.service.GestorConsultas;
 import org.service.GestorCuenta;
 import org.service.GestorOperaciones;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Scanner;
 
 /**
@@ -20,6 +22,7 @@ public class Menu {
     private static GestorCliente gestorCliente = new GestorCliente(repositorio);
     private static GestorCuenta gestorCuenta = new GestorCuenta(repositorio, gestorCliente);
     private static GestorOperaciones gestorOperaciones = new GestorOperaciones(repositorio, gestorCuenta);
+    private static GestorConsultas gestorConsultas = new GestorConsultas(repositorio, gestorCuenta);
 
     /**
      * Menú de cada parte del proyecto
@@ -60,6 +63,13 @@ public class Menu {
             3. Transferencia entre cuentas 
             4. Volver
             """;
+    private static final String MOSTRARTEXTOCONSULTAS = """
+            --- CONSULTAS --- 
+            1. Consultar saldo 
+            2. Historial de movimientos 
+            3. Movimientos por rango de fechas 
+            4. Volver
+            """;
 
     /**
      * Menú que llama a los métodos de GestorClientes
@@ -86,6 +96,7 @@ public class Menu {
                     String telefono = scanner.nextLine();
 
                     gestorCliente.insertarCliente(nombre, apellidos, dni, email, telefono);
+                    System.out.println(repositorio.clientes.size());
                     break;
 
                 case 2:
@@ -99,8 +110,8 @@ public class Menu {
                     }else if (busqueda == 2){
                         System.out.println("Introduzca el DNI del cliente: ");
                         String buscarDni = scanner.nextLine();
+                        System.out.println(gestorCliente.buscarClienteDNI(buscarDni));
 
-                        gestorCliente.buscarClienteDNI(buscarDni);
                     }else {
                         System.out.println("ERROR: Opción incorrecta, por favor, seleccione una opción válida");
                     }
@@ -211,6 +222,44 @@ public class Menu {
     }
 
     /**
+     * Menú consultas, encargado de
+     */
+    public static void menuConsultas(){
+        Scanner scanner = new Scanner(System.in);
+        int opcion;
+
+        do{
+            System.out.println(MOSTRARTEXTOCONSULTAS);
+            opcion = Integer.parseInt(scanner.nextLine());
+
+            switch (opcion){
+                case 1:
+                    System.out.println("Introduzca su número de cuenta: ");
+                    String numeroCuenta = scanner.nextLine();
+                    gestorConsultas.consultarSaldo(numeroCuenta);
+                    break;
+                case 2:
+                    System.out.println("Introduzca su número de cuenta: ");
+                    String numero_cuenta = scanner.nextLine();
+                    gestorConsultas.historialMovimientos(numero_cuenta);
+                    break;
+                case 3:
+                    System.out.println("Introduzca una fecha de inicio (yyyy-MM-dd): ");
+                    LocalDate fechainicio = LocalDate.parse(scanner.nextLine());
+                    System.out.println("Introduzca una fecha de fin (yyyy-MM-dd): ");
+                    LocalDate fechafin = LocalDate.parse(scanner.nextLine());
+                    gestorConsultas.movimientosPorFecha(fechainicio, fechafin);
+                    break;
+                case 4:
+                    menuPrincipal();
+                default:
+                    System.out.println("Opción no válida.");
+            }
+
+        }while (opcion != 4);
+    }
+
+    /**
      * Menú principal, redirige a los diversos menús según la opción
      */
     public static void menuPrincipal(){
@@ -233,8 +282,19 @@ public class Menu {
                 case 3:
                     menuOperaciones();
                     break;
+
+                case 4:
+                    menuConsultas();
+                    break;
+
+                case 5:
+                    System.out.println("Bye Bye!");
+                    break;
+
+                default:
+                    System.out.println("Opción no válida.");
             }
 
-        }while (opcion != 3);
+        }while (opcion != 5);
     }
 }

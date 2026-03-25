@@ -35,6 +35,14 @@ public class GestorCliente {
      */
     public void insertarCliente(String nombre, String apellidos, String dni, String email,
                                 String telefono){
+        if (nombre == null || nombre.isEmpty() ||
+                apellidos == null || apellidos.isEmpty() ||
+                dni == null || dni.isEmpty() ||
+                email == null || email.isEmpty() ||
+                telefono == null || telefono.isEmpty()) {
+            throw new IllegalArgumentException("ERROR: Por favor, rellene todos los campos.");
+        }
+
         if (verificarDNI(dni)){
             throw new IllegalArgumentException("ERROR: El DNI ingresado está en uso.");
         }
@@ -46,6 +54,12 @@ public class GestorCliente {
         }
         if (!confirmarEmail(email)){
             throw new IllegalArgumentException("ERROR: El email proporcionado es inválido.");
+        }
+        if (!confirmarDNI(dni)){
+            throw new IllegalArgumentException("ERROR: El DNI proporcionado es inválido.");
+        }
+        if (!confirmarTelefono(telefono)){
+            throw new IllegalArgumentException("ERROR: El teléfono proporcionado es inválido.");
         }
         Cliente cliente = new Cliente();
         LocalDate fecha_creacion = LocalDate.now();
@@ -90,9 +104,35 @@ public class GestorCliente {
     }
 
     /**
+     * Método para comprobar que un DNI tenga el patrón requerido.
+     * @param dni
+     * @return true/false
+     */
+    public boolean confirmarDNI(String dni){
+        if(dni == null || dni.isEmpty()){
+            return false;
+        }
+        String dni_pattern = "\\d{8}[A-Z]";
+        return dni.matches(dni_pattern);
+    }
+
+    /**
+     * Método para comprobar que un teléfono tenga el patrón requerido.
+     * @param telefono
+     * @return true/false
+     */
+    public boolean confirmarTelefono(String telefono){
+        if(telefono == null || telefono.isEmpty()){
+            return false;
+        }
+        String phone_pattern = "^(?:\\+34|0034)?\\s?(?:6\\d{8}|7\\d{8}|8\\d{8}|9\\d{8})$";
+        return telefono.matches(phone_pattern);
+    }
+
+    /**
      * Método que comprueba que un email cumpla con el patrón requerido
      * @param email
-     * @return
+     * @return true/false
      */
     public boolean confirmarEmail(String email){
         if(email == null || email.isEmpty()){
@@ -148,17 +188,13 @@ public class GestorCliente {
      * Método que busca un cliente por dni.
      * @param dni
      */
-    public void buscarClienteDNI(String dni){
+    public String buscarClienteDNI(String dni){
         for(Cliente cliente : repositorio.clientes.values()){
             if(cliente.getDni().equals(dni)){
-                System.out.println("Cliente encontrado: ");
-                System.out.println("ID: " + cliente.getId());
-                System.out.println("Nombre: " + cliente.getNombre() + " " + cliente.getApellidos());
-                System.out.println("DNI: " + cliente.getDni());
-                System.out.println("Email: " + cliente.getEmail());
-                System.out.println("Teléfono: " + cliente.getTelefono());
+                return cliente.toString();
             }
         }
+        return "ERROR: No se ha encontrado al usuario.";
     }
 
     /**
@@ -167,6 +203,7 @@ public class GestorCliente {
     public void listarClientes(){
         if (repositorio.clientes.isEmpty()){
             System.out.println("ERROR: No hay usuarios que visualizar.");
+            return;
         }
         System.out.printf("|%4s |%-15s |%-10s |%-20s |%-10s|\n", "ID", "Nombre", "DNI", "Email", "Teléfono");
         System.out.println("|-----|----------------|-----------|---------------------|----------|");

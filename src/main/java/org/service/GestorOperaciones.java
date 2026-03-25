@@ -37,7 +37,7 @@ public class GestorOperaciones {
         }
         BigDecimal nuevoSueldo = cuenta.getSaldo().add(cantidad);
         cuenta.setSaldo(nuevoSueldo);
-        Movimiento deposito = new Movimiento(cuenta.getId(), "DEPÓSITO", cantidad.plus(), LocalDate.now());
+        Movimiento deposito = new Movimiento(cuenta.getNumero_cuenta(), "DEPÓSITO", cantidad.plus(), LocalDate.now());
         repositorio.guardarMovimiento(deposito);
     }
 
@@ -61,7 +61,7 @@ public class GestorOperaciones {
 
         BigDecimal nuevoSueldo = cuenta.getSaldo().subtract(cantidad);
         cuenta.setSaldo(nuevoSueldo);
-        Movimiento retirar = new Movimiento(cuenta.getId(), "RETIRO", cantidad.negate(), LocalDate.now());
+        Movimiento retirar = new Movimiento(cuenta.getNumero_cuenta(), "RETIRO", cantidad.negate(), LocalDate.now());
         repositorio.guardarMovimiento(retirar);
     }
 
@@ -95,9 +95,9 @@ public class GestorOperaciones {
         cuentaOrigen.setSaldo(cuentaOrigen.getSaldo().subtract(cantidad));
         try {
             cuentaDestinatario.setSaldo(cuentaDestinatario.getSaldo().add(cantidad));
-            Movimiento transferencia_saliente = new Movimiento(cuentaOrigen.getId(), "TRANSFERENCIA_SALIENTE", cantidad.negate(), LocalDate.now());
+            Movimiento transferencia_saliente = new Movimiento(cuentaOrigen.getNumero_cuenta(), "TRANSFERENCIA_SALIENTE", cantidad.negate(), LocalDate.now());
             repositorio.movimientos.put(transferencia_saliente.getId(), transferencia_saliente);
-            Movimiento transferencia_entrante = new Movimiento(cuentaDestinatario.getId(), "TRANSFERENCIA_ENTRANTE", cantidad.plus(), LocalDate.now());
+            Movimiento transferencia_entrante = new Movimiento(cuentaDestinatario.getNumero_cuenta(), "TRANSFERENCIA_ENTRANTE", cantidad.plus(), LocalDate.now());
             repositorio.movimientos.put(transferencia_entrante.getId(), transferencia_entrante);
             System.out.println("Transferencia realizada correctamente.");
             System.out.println("Cuenta Origen: " + cuentaOrigen.getNumero_cuenta() + " -> " + cantidad.negate());

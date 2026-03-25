@@ -159,4 +159,16 @@ public class Cliente {
     public void setFecha_creacion(LocalDate fecha_creacion) {
         this.fecha_creacion = fecha_creacion;
     }
+
+    @Override
+    public String toString() {
+        return
+                "ID: " + id + '\n' +
+                "Nombre: " + nombre + '\n' +
+                "Apellidos: " + apellidos + '\n' +
+                "DNI: " + dni + '\n' +
+                "Email: " + email + '\n' +
+                "Teléfono: " + telefono + '\n' +
+                "Fecha creacion: " + fecha_creacion;
+    }
 }

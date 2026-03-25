@@ -89,10 +89,18 @@ public class GestorCuenta {
                 System.out.printf("|%-22s |%-10s|\n", "Número de cuenta", "Saldo");
                 System.out.println("|-----------------------|----------|");
                 System.out.printf("|%-22s |%-10s|\n", cuenta.getNumero_cuenta(), cuenta.getSaldo());
+            }else{
+                System.out.println("ERROR: No se ha encontrado el ID: " + id_titular);
+                return;
             }
         }
     }
 
+    /**
+     * Método que busca una Cuenta
+     * @param numeroCuenta
+     * @return Cuenta
+     */
     public Cuenta buscarCuenta(String numeroCuenta){
         Cuenta cuenta = repositorio.cuentas.get(numeroCuenta);
         return cuenta;
@@ -111,6 +119,9 @@ public class GestorCuenta {
                 System.out.println("Titular: " + cuenta.getTitular());
                 System.out.println("Saldo: " + cuenta.getSaldo());
                 System.out.println("Fecha de creación: " + cuenta.getFecha_creacion());
+            }else{
+                System.out.println("El número de la cuenta no está registrado.");
+                return;
             }
         }
     }

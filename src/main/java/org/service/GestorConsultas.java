@@ -2,6 +2,7 @@ package org.service;
 
 import org.model.Cuenta;
 import org.model.Movimiento;
+import org.repositorio.Repositorio;
 
 import java.time.LocalDate;
 
@@ -13,13 +14,16 @@ public class GestorConsultas {
     /**
      * Atributos de la clase
      */
-    private GestorCuenta gestorCuenta = new GestorCuenta();
-    private GestorOperaciones gestorOperaciones = new GestorOperaciones();
+    private Repositorio repositorio;
+    private GestorCuenta gestorCuenta;
 
     /**
-     * Constructor vacío
+     * Constructor de la clase
      */
-    public GestorConsultas(){}
+    public GestorConsultas(Repositorio repositorio, GestorCuenta gestorCuenta) {
+        this.repositorio = repositorio;
+        this.gestorCuenta = gestorCuenta;
+    }
 
     /**
      * Consulta para ver el saldo de una cuenta.
@@ -27,13 +31,11 @@ public class GestorConsultas {
      * @param numeroCuenta
      */
     public void consultarSaldo(String numeroCuenta){
-        for(Cuenta cuenta : gestorCuenta.getCuentas().values()){
-            if (cuenta.getNumero_cuenta().equals(numeroCuenta)){
-                System.out.println("Saldo Actual: " + cuenta.getSaldo());
-            }else {
-                System.out.println("ERROR: No se ha encontrado el número de cuenta en la base de datos.");
-            }
+        Cuenta cuenta = gestorCuenta.buscarCuenta(numeroCuenta);
+        if (cuenta == null){
+            throw new IllegalArgumentException("ERROR: La cuenta no se ha encontrado.");
         }
+        System.out.println("Saldo Actual: " + cuenta.getSaldo());
     }
 
     /**
@@ -42,17 +44,15 @@ public class GestorConsultas {
      * @param numeroCuenta
      */
     public void historialMovimientos(String numeroCuenta){
-        for(Cuenta cuenta : gestorCuenta.getCuentas().values()){
-            if (cuenta.getNumero_cuenta().equals(numeroCuenta)){
-                for (Movimiento movimiento : gestorOperaciones.getMovimientos().values()){
-                    System.out.println("Historial de movimientos " + cuenta.getNumero_cuenta() + ":");
-                    System.out.printf("|%-20s |%-20s| |%-20s|\n", "Fecha", "Tipo", "Cantidad");
-                    System.out.println("|---------------------|---------------------|---------------------|");
-                    System.out.printf("|%-20s |%-20s| |%-20s|\n", movimiento.getFecha(), movimiento.getTipo(), movimiento.getCantidad());
-                }
-            }else {
-                System.out.println("ERROR: No se ha encontrado el número de cuenta en la base de datos.");
-            }
+        Cuenta cuenta = gestorCuenta.buscarCuenta(numeroCuenta);
+        if (cuenta == null){
+            throw new IllegalArgumentException("ERROR: No se ha encontrado la cuenta.");
+        }
+        for (Movimiento movimiento : repositorio.movimientos.values()){
+            System.out.println("Historial de movimientos " + cuenta.getNumero_cuenta() + ":");
+            System.out.printf("|%-20s |%-20s| |%-20s|\n", "Fecha", "Tipo", "Cantidad");
+            System.out.println("|---------------------|---------------------|---------------------|");
+            System.out.printf("|%-20s |%-20s| |%-20s|\n", movimiento.getFecha(), movimiento.getTipo(), movimiento.getCantidad());
         }
     }
 
@@ -63,7 +63,7 @@ public class GestorConsultas {
      * @param fechaFin
      */
     public void movimientosPorFecha(LocalDate fechaInicio, LocalDate fechaFin){
-        for (Movimiento movimiento : gestorOperaciones.getMovimientos().values()){
+        for (Movimiento movimiento : repositorio.movimientos.values()){
             if(!movimiento.getFecha().equals(fechaInicio) || !movimiento.getFecha().equals(fechaFin)){
                 System.out.println("ERROR: Las fechas no están registradas en la base de datos.");
             }
@@ -76,5 +76,4 @@ public class GestorConsultas {
             System.out.printf("|%-20s |%-20s| |%-20s|\n", movimiento.getFecha(), movimiento.getTipo(), movimiento.getCantidad());
         }
     }
-
 }
