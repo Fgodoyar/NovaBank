@@ -5,6 +5,9 @@ import org.model.Movimiento;
 import org.repositorio.Repositorio;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Clase GestorConsultas, encargada de gestionar las consultas
@@ -44,6 +47,10 @@ public class GestorConsultas {
      * @param numeroCuenta
      */
     public void historialMovimientos(String numeroCuenta){
+        if(repositorio.movimientos.isEmpty()){
+            System.out.println("No hay movimientos que mostrar.");
+        }
+
         Cuenta cuenta = gestorCuenta.buscarCuenta(numeroCuenta);
         if (cuenta == null){
             throw new IllegalArgumentException("ERROR: No se ha encontrado la cuenta.");
@@ -54,6 +61,8 @@ public class GestorConsultas {
             System.out.println("|---------------------|---------------------|---------------------|");
             System.out.printf("|%-20s |%-20s| |%-20s|\n", movimiento.getFecha(), movimiento.getTipo(), movimiento.getCantidad());
         }
+
+
     }
 
     /**
@@ -63,13 +72,19 @@ public class GestorConsultas {
      * @param fechaFin
      */
     public void movimientosPorFecha(LocalDate fechaInicio, LocalDate fechaFin){
+        if(repositorio.movimientos.isEmpty()){
+            System.out.println("No hay movimientos que mostrar.");
+        }
         for (Movimiento movimiento : repositorio.movimientos.values()){
             if(!movimiento.getFecha().equals(fechaInicio) || !movimiento.getFecha().equals(fechaFin)){
                 System.out.println("ERROR: Las fechas no están registradas en la base de datos.");
+                continue;
             }
             if(!fechaInicio.isAfter(fechaFin)){
-                System.out.println("ERROR: La fecha inicial es superior a la fecha final.");
+                System.out.println("ERROR: La fecha inicial es superior o igual a la fecha final.");
+                return;
             }
+
             System.out.println("Historial de movimientos: ");
             System.out.printf("|%-20s |%-20s| |%-20s|\n", "Fecha", "Tipo", "Cantidad");
             System.out.println("|---------------------|---------------------|---------------------|");

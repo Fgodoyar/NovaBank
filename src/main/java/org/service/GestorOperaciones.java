@@ -39,6 +39,7 @@ public class GestorOperaciones {
         cuenta.setSaldo(nuevoSueldo);
         Movimiento deposito = new Movimiento(cuenta.getNumero_cuenta(), "DEPÓSITO", cantidad.plus(), LocalDate.now());
         repositorio.guardarMovimiento(deposito);
+        System.out.println("Se ha ingresado correctamente.");
     }
 
     /**
@@ -63,6 +64,7 @@ public class GestorOperaciones {
         cuenta.setSaldo(nuevoSueldo);
         Movimiento retirar = new Movimiento(cuenta.getNumero_cuenta(), "RETIRO", cantidad.negate(), LocalDate.now());
         repositorio.guardarMovimiento(retirar);
+        System.out.println("Se ha retirado correctamente.");
     }
 
     /**
@@ -96,9 +98,9 @@ public class GestorOperaciones {
         try {
             cuentaDestinatario.setSaldo(cuentaDestinatario.getSaldo().add(cantidad));
             Movimiento transferencia_saliente = new Movimiento(cuentaOrigen.getNumero_cuenta(), "TRANSFERENCIA_SALIENTE", cantidad.negate(), LocalDate.now());
-            repositorio.movimientos.put(transferencia_saliente.getId(), transferencia_saliente);
+            repositorio.guardarMovimiento(transferencia_saliente);
             Movimiento transferencia_entrante = new Movimiento(cuentaDestinatario.getNumero_cuenta(), "TRANSFERENCIA_ENTRANTE", cantidad.plus(), LocalDate.now());
-            repositorio.movimientos.put(transferencia_entrante.getId(), transferencia_entrante);
+            repositorio.guardarMovimiento(transferencia_entrante);
             System.out.println("Transferencia realizada correctamente.");
             System.out.println("Cuenta Origen: " + cuentaOrigen.getNumero_cuenta() + " -> " + cantidad.negate());
             System.out.println("Cuenta Destino: " + cuentaDestinatario.getNumero_cuenta() + " -> " + "+" + cantidad);

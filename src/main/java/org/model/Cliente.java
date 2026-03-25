@@ -34,16 +34,14 @@ public class Cliente {
      * @param dni
      * @param email
      * @param telefono
-     * @param fecha_creacion
      */
-    public Cliente(String nombre, String apellidos, String dni, String email, String telefono, LocalDate fecha_creacion) {
+    public Cliente(String nombre, String apellidos, String dni, String email, String telefono) {
         this.id = ++contadorClientes;
         this.nombre = nombre;
         this.apellidos = apellidos;
         this.dni = dni;
         this.email = email;
         this.telefono = telefono;
-        this.fecha_creacion = fecha_creacion;
     }
 
     //GETTERS Y SETTERS

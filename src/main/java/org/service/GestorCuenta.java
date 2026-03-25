@@ -30,14 +30,6 @@ public class GestorCuenta {
     }
 
     /**
-     * Obtiene el mapa de las cuentas.
-     * @return mapa de cuentas
-     */
-    public Map<String, Cuenta> getCuentas() {
-        return cuentas;
-    }
-
-    /**
      * Método que se encarga de generar un IBAN
      * La variable número se desplaza 12 ceros hacia la izquierda y con el contador se incrementa
      * @return el número de cuenta automátizado.
@@ -89,11 +81,10 @@ public class GestorCuenta {
                 System.out.printf("|%-22s |%-10s|\n", "Número de cuenta", "Saldo");
                 System.out.println("|-----------------------|----------|");
                 System.out.printf("|%-22s |%-10s|\n", cuenta.getNumero_cuenta(), cuenta.getSaldo());
-            }else{
-                System.out.println("ERROR: No se ha encontrado el ID: " + id_titular);
                 return;
             }
         }
+        System.out.println("ERROR: No se ha encontrado el ID: " + id_titular);
     }
 
     /**
@@ -119,10 +110,9 @@ public class GestorCuenta {
                 System.out.println("Titular: " + cuenta.getTitular());
                 System.out.println("Saldo: " + cuenta.getSaldo());
                 System.out.println("Fecha de creación: " + cuenta.getFecha_creacion());
-            }else{
-                System.out.println("El número de la cuenta no está registrado.");
                 return;
             }
         }
+        System.out.println("El número de la cuenta no está registrado.");
     }
 }
