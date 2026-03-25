@@ -11,9 +11,9 @@ public class Cuenta {
     /**
      * Atributos de la clase
      */
-    private static long contadorCuentas = 1L;
+    private static Long contadorCuentas = 1L;
 
-    private long id;
+    private Long id;
     private String numero_cuenta;
     private String titular;
     private long cliente_id;
@@ -48,7 +48,7 @@ public class Cuenta {
      * Obtiene el ID de la cuenta.
      * @return id de la cuenta
      */
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
@@ -56,7 +56,7 @@ public class Cuenta {
      * Inserta el ID de una cuenta.
      * @param id
      */
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -96,7 +96,7 @@ public class Cuenta {
      * Obtiene el ID del cliente.
      * @return
      */
-    public long getCliente_id() {
+    public Long getCliente_id() {
         return cliente_id;
     }
 
@@ -104,7 +104,7 @@ public class Cuenta {
      * Inserta el ID del cliente.
      * @param cliente_id
      */
-    public void setCliente_id(long cliente_id) {
+    public void setCliente_id(Long cliente_id) {
         this.cliente_id = cliente_id;
     }
 

@@ -3,7 +3,9 @@ package org.ui;
 import org.repositorio.Repositorio;
 import org.service.GestorCliente;
 import org.service.GestorCuenta;
+import org.service.GestorOperaciones;
 
+import java.math.BigDecimal;
 import java.util.Scanner;
 
 /**
@@ -17,6 +19,7 @@ public class Menu {
     private static Repositorio repositorio = new Repositorio();
     private static GestorCliente gestorCliente = new GestorCliente(repositorio);
     private static GestorCuenta gestorCuenta = new GestorCuenta(repositorio, gestorCliente);
+    private static GestorOperaciones gestorOperaciones = new GestorOperaciones(repositorio, gestorCuenta);
 
     /**
      * Menú de cada parte del proyecto
@@ -49,6 +52,13 @@ public class Menu {
             --- Seleccione una de las opciones de búsqueda ---
             1. Por ID de Cliente.
             2. Por DNI de Cliente.
+            """;
+    private static final String MOSTRARTEXTOOPERACIONES = """
+            --- OPERACIONES FINANCIERAS --- 
+            1. Depositar dinero 
+            2. Retirar dinero 
+            3. Transferencia entre cuentas 
+            4. Volver
             """;
 
     /**
@@ -83,7 +93,7 @@ public class Menu {
                     long busqueda = Long.parseLong(scanner.nextLine());
                     if(busqueda == 1){
                         System.out.println("Introduzca el ID del cliente: ");
-                        long buscarId = Long.parseLong(scanner.nextLine());
+                        Long buscarId = Long.parseLong(scanner.nextLine());
 
                         gestorCliente.mostrarClientePorId(buscarId);
                     }else if (busqueda == 2){
@@ -125,7 +135,7 @@ public class Menu {
                 case 1:
                     try{
                         System.out.println("Introduce el ID del cliente: ");
-                        long id_cliente = Long.parseLong(scanner.nextLine());
+                        Long id_cliente = Long.parseLong(scanner.nextLine());
                         gestorCuenta.crearCuenta(id_cliente);
 
                     }catch (Exception e){
@@ -135,7 +145,7 @@ public class Menu {
                 case 2:
                     try{
                         System.out.println("Introduce el ID del cliente: ");
-                        long id_cliente = Long.parseLong(scanner.nextLine());
+                        Long id_cliente = Long.parseLong(scanner.nextLine());
                         gestorCuenta.listarCuentas(id_cliente);
 
                     } catch (Exception e) {
@@ -157,6 +167,50 @@ public class Menu {
     }
 
     /**
+     * Menú operaciones, encargado de llamar a los métodos de GestorCuenta
+     */
+    public static void menuOperaciones(){
+        Scanner scanner = new Scanner(System.in);
+        int opcion;
+
+        do{
+            System.out.println(MOSTRARTEXTOOPERACIONES);
+            opcion = Integer.parseInt(scanner.nextLine());
+
+            switch (opcion){
+                case 1:
+                    System.out.println("Introduzca su número de cuenta: ");
+                    String numeroCuenta = scanner.nextLine();
+                    System.out.println("Introduzca la cantidad a depositar: ");
+                    BigDecimal cantidad_ingresar = new BigDecimal(scanner.nextLine());
+                    gestorOperaciones.depositarDinero(numeroCuenta, cantidad_ingresar);
+                    break;
+                case 2:
+                    System.out.println("Introduzca su número de cuenta: ");
+                    String numero_cuenta = scanner.nextLine();
+                    System.out.println("Introduzca la cantidad a retirar: ");
+                    BigDecimal cantidad_retirar = new BigDecimal(scanner.nextLine());
+                    gestorOperaciones.retirarDinero(numero_cuenta, cantidad_retirar);
+                    break;
+                case 3:
+                    System.out.println("Introduzca su número de cuenta: ");
+                    String numeroCuentaOrigen = scanner.nextLine();
+                    System.out.println("Introduzca el número de cuenta de la persona a la que desea depositar: ");
+                    String numeroCuentaDestino = scanner.nextLine();
+                    System.out.println("Introduzca la cantidad que desea transferir: ");
+                    BigDecimal cantidad_transaccion = new BigDecimal(scanner.nextLine());
+                    gestorOperaciones.transaccion(numeroCuentaOrigen, numeroCuentaDestino, cantidad_transaccion);
+                    break;
+                case 4:
+                    menuPrincipal();
+                default:
+                    System.out.println("Opción no válida.");
+            }
+
+            }while(opcion != 4);
+    }
+
+    /**
      * Menú principal, redirige a los diversos menús según la opción
      */
     public static void menuPrincipal(){
@@ -175,8 +229,12 @@ public class Menu {
                 case 2:
                     menuCuenta();
                     break;
+
+                case 3:
+                    menuOperaciones();
+                    break;
             }
 
-        }while (opcion != 2);
+        }while (opcion != 3);
     }
 }

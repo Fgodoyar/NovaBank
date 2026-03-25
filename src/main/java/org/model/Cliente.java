@@ -10,9 +10,9 @@ public class Cliente {
     /**
      * Atributos de la clase.
      */
-    private static long contadorClientes = 1000L;
+    private static Long contadorClientes = 1000L;
 
-    private long id;
+    private Long id;
     private String nombre;
     private String apellidos;
     private String dni;
@@ -52,7 +52,7 @@ public class Cliente {
      * Obtiene el id del ciente
      * @return id del cliente
      */
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
@@ -60,7 +60,7 @@ public class Cliente {
      * Inserta un id
      * @param id
      */
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

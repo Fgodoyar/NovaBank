@@ -40,5 +40,8 @@ public class Repositorio {
         return cuenta;
     }
 
-
+    public Movimiento guardarMovimiento(Movimiento movimiento){
+        movimientos.put(movimiento.getId(), movimiento);
+        return movimiento;
+    }
 }

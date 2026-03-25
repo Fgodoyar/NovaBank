@@ -56,7 +56,7 @@ public class GestorCuenta {
      * En caso de que el cliente no exista en el mapa clientes, saltará un error por consola.
      * @param id_titular
      */
-    public void crearCuenta(long id_titular){
+    public void crearCuenta(Long id_titular){
         Cliente cliente = gestorClientes.buscarClienteID(id_titular);
         if(cliente == null){
             throw new IllegalArgumentException("ERROR: No hay clientes registrados");
@@ -82,16 +82,20 @@ public class GestorCuenta {
      * En caso contrario, mostrará un error por consola.
      * @param id_titular
      */
-    public void listarCuentas(long id_titular){
+    public void listarCuentas(Long id_titular){
         for(Cuenta cuenta : repositorio.cuentas.values()){
-            if (!(cuenta.getCliente_id() == id_titular)){
-                System.out.println("ERROR: El ID no está registrado en la base de datos.");
+            if (cuenta.getCliente_id().equals(id_titular)){
+                System.out.println("Cuentas del cliente: " + cuenta.getTitular() + ":");
+                System.out.printf("|%-22s |%-10s|\n", "Número de cuenta", "Saldo");
+                System.out.println("|-----------------------|----------|");
+                System.out.printf("|%-22s |%-10s|\n", cuenta.getNumero_cuenta(), cuenta.getSaldo());
             }
-            System.out.println("Cuentas del cliente: " + cuenta.getTitular() + ":");
-            System.out.printf("|%-22s |%-10s|\n", "Número de cuenta", "Saldo");
-            System.out.println("|-----------------------|----------|");
-            System.out.printf("|%-22s |%-10s|\n", cuenta.getNumero_cuenta(), cuenta.getSaldo());
         }
+    }
+
+    public Cuenta buscarCuenta(String numeroCuenta){
+        Cuenta cuenta = repositorio.cuentas.get(numeroCuenta);
+        return cuenta;
     }
 
     /**
@@ -102,13 +106,12 @@ public class GestorCuenta {
      */
     public void informacionCuenta(String numeroCuenta){
         for(Cuenta cuenta : repositorio.cuentas.values()){
-            if (!(cuenta.getNumero_cuenta().equals(numeroCuenta))){
-                System.out.println("El número no está registrado en la base de datos.");
+            if (cuenta.getNumero_cuenta().equals(numeroCuenta)){
+                System.out.println("Número de cuenta: " + cuenta.getNumero_cuenta());
+                System.out.println("Titular: " + cuenta.getTitular());
+                System.out.println("Saldo: " + cuenta.getSaldo());
+                System.out.println("Fecha de creación: " + cuenta.getFecha_creacion());
             }
-            System.out.println("Número de cuenta: " + cuenta.getNumero_cuenta());
-            System.out.println("Titular: " + cuenta.getTitular());
-            System.out.println("Saldo: " + cuenta.getSaldo());
-            System.out.println("Fecha de creación: " + cuenta.getFecha_creacion());
         }
     }
 }

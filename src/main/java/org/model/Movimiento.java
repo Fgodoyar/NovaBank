@@ -10,10 +10,10 @@ public class Movimiento {
     /**
      * Atributos de la clase
      */
-    private static long contadorMovimiento = 1L;
+    private static Long contadorMovimiento = 1L;
 
-    private long id;
-    private long id_cuenta;
+    private Long id;
+    private Long id_cuenta;
     private String tipo;
     private BigDecimal cantidad;
     private LocalDate fecha;
@@ -32,7 +32,7 @@ public class Movimiento {
      * @param cantidad
      * @param fecha
      */
-    public Movimiento(long id_cuenta, String tipo, BigDecimal cantidad, LocalDate fecha) {
+    public Movimiento(Long id_cuenta, String tipo, BigDecimal cantidad, LocalDate fecha) {
         this.id = contadorMovimiento++;
         this.id_cuenta = id_cuenta;
         this.tipo = tipo;
@@ -44,7 +44,7 @@ public class Movimiento {
      * Obtiene el ID del movimiento.
      * @return ID del movimiento
      */
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
@@ -52,7 +52,7 @@ public class Movimiento {
      * Inserta el ID del movimiento.
      * @param id
      */
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -60,7 +60,7 @@ public class Movimiento {
      * Obtiene el ID de la cuenta.
      * @return ID de la cuenta
      */
-    public long getId_cuenta() {
+    public Long getId_cuenta() {
         return id_cuenta;
     }
 
@@ -68,7 +68,7 @@ public class Movimiento {
      * Inserta el ID de la cuenta.
      * @param id_cuenta
      */
-    public void setId_cuenta(long id_cuenta) {
+    public void setId_cuenta(Long id_cuenta) {
         this.id_cuenta = id_cuenta;
     }
 

@@ -157,8 +157,6 @@ public class GestorCliente {
                 System.out.println("DNI: " + cliente.getDni());
                 System.out.println("Email: " + cliente.getEmail());
                 System.out.println("Teléfono: " + cliente.getTelefono());
-            }else{
-                System.out.println("ERROR: No se encontró ningún cliente con DNI " + dni + ".");
             }
         }
     }
@@ -171,7 +169,7 @@ public class GestorCliente {
             System.out.println("ERROR: No hay usuarios que visualizar.");
         }
         System.out.printf("|%4s |%-15s |%-10s |%-20s |%-10s|\n", "ID", "Nombre", "DNI", "Email", "Teléfono");
-        System.out.println("------|----------------|-----------|---------------------|----------|");
+        System.out.println("|-----|----------------|-----------|---------------------|----------|");
         repositorio.clientes.forEach((id, cliente) -> {
             System.out.printf("|%2d |%-15s |%-10s |%-20s |%-10s|\n",
                     cliente.getId(), cliente.getNombre() + " " + cliente.getApellidos(),
