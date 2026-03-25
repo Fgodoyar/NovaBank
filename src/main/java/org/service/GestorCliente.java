@@ -1,6 +1,7 @@
 package org.service;
 
 import org.model.Cliente;
+import org.repositorio.Repositorio;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -12,37 +13,20 @@ import java.util.Map;
  */
 public class GestorCliente {
     /**
-     * Map de clientes que guarda en memoria los clientes insertados.
+     * Atributos de la clase.
      */
-    private Map<Long, Cliente> clientes;
+    private Repositorio repositorio;
 
     /**
      * Constructor de la clase
      */
-    public GestorCliente() {
-        this.clientes = new HashMap<>();
+    public GestorCliente(Repositorio repositorio) {
+        this.repositorio = repositorio;
     }
 
     /**
-     * Obtiene un mapa de clientes.
-     * @return mapa de clientes
-     */
-    public Map<Long, Cliente> getClientes() {
-        return clientes;
-    }
-
-    /**
-     * Método principal para insertar datos.
-     * @param id
-     * @param cliente
-     */
-    public void insertarCliente(long id, Cliente cliente){
-        clientes.put(id, cliente);
-    }
-
-    /**
-     * Método sobrecargado que incluye la creación de un cliente y por último llama al otro
-     * método para guardarlo en el mapa
+     * Método que incluye la creación y las verificaciones de un cliente y por último llama al método
+     * guardarCliente para guardarlo en el mapa
      * @param nombre
      * @param apellidos
      * @param dni
@@ -51,17 +35,17 @@ public class GestorCliente {
      */
     public void insertarCliente(String nombre, String apellidos, String dni, String email,
                                 String telefono){
-        if (!verificarDNI(dni)){
-            System.out.println("ERROR: El DNI ingresado está en uso.");
+        if (verificarDNI(dni)){
+            throw new IllegalArgumentException("ERROR: El DNI ingresado está en uso.");
         }
-        if(!verificarEmail(email)){
-            System.out.println("ERROR: El email ya está en uso.");
+        if(verificarEmail(email)){
+            throw new IllegalArgumentException("ERROR: El email ya está en uso.");
         }
-        if(!verificarTelefono(telefono)){
-            System.out.println("ERROR: El telefono ya está en uso.");
+        if(verificarTelefono(telefono)){
+            throw new IllegalArgumentException("ERROR: El telefono ya está en uso.");
         }
-        if (confirmarEmail(email)){
-            System.out.println("ERROR: El email proporcionado es inválido.");
+        if (!confirmarEmail(email)){
+            throw new IllegalArgumentException("ERROR: El email proporcionado es inválido.");
         }
         Cliente cliente = new Cliente();
         LocalDate fecha_creacion = LocalDate.now();
@@ -72,7 +56,7 @@ public class GestorCliente {
         cliente.setTelefono(telefono);
         cliente.setFecha_creacion(fecha_creacion);
 
-        insertarCliente(cliente.getId(), cliente);
+        repositorio.guardarCliente(cliente);
         System.out.println("Cliente insertado correctamente.");
         System.out.println("ID generado del cliente: " + cliente.getId());
     }
@@ -83,7 +67,7 @@ public class GestorCliente {
      * @return
      */
     public boolean verificarTelefono(String telefono){
-        for(Cliente cliente : clientes.values()){
+        for(Cliente cliente : repositorio.clientes.values()){
             if(cliente.getTelefono().equals(telefono)){
                 return true;
             }
@@ -97,7 +81,7 @@ public class GestorCliente {
      * @return
      */
     public boolean verificarEmail(String email){
-        for(Cliente cliente : clientes.values()){
+        for(Cliente cliente : repositorio.clientes.values()){
             if(cliente.getEmail().equals(email)){
                 return true;
             }
@@ -125,7 +109,7 @@ public class GestorCliente {
      * @return
      */
     public boolean verificarDNI(String dni) {
-        for(Cliente cliente : clientes.values()){
+        for(Cliente cliente : repositorio.clientes.values()){
             if(cliente.getDni().equals(dni)){
                 return true;
             }
@@ -137,21 +121,26 @@ public class GestorCliente {
      * Método que busca un cliente por id.
      * @param id
      */
-    public void buscarClienteID(Long id){
-        try{
-            Cliente cliente = clientes.get(id);
-            if (cliente != null){
-                System.out.println("Cliente encontrado: ");
-                System.out.println("ID: " + cliente.getId());
-                System.out.println("Nombre: " + cliente.getNombre() + cliente.getApellidos());
-                System.out.println("DNI: " + cliente.getDni());
-                System.out.println("Email: " + cliente.getEmail());
-                System.out.println("Teléfono: " + cliente.getTelefono());
-            }else {
-                System.out.println("ERROR: No se encontró ningún cliente con ID " + id + ".");
-            }
-        } catch (Exception e) {
-            System.out.println("ERROR: Caracter no válido");;
+    public Cliente buscarClienteID(Long id){
+        Cliente cliente = repositorio.clientes.get(id);
+        return cliente;
+    }
+
+    /**
+     * Método que muestra un cliente por ID
+     * @param id
+     */
+    public void mostrarClientePorId(Long id){
+        Cliente cliente = buscarClienteID(id);
+        if(cliente != null){
+            System.out.println("Cliente encontrado: ");
+            System.out.println("ID: " + cliente.getId());
+            System.out.println("Nombre: " + cliente.getNombre() + cliente.getApellidos());
+            System.out.println("DNI: " + cliente.getDni());
+            System.out.println("Email: " + cliente.getEmail());
+            System.out.println("Teléfono: " + cliente.getTelefono());
+        }else {
+            System.out.println("ERROR: No se encontró ningún cliente con ID " + id + ".");
         }
     }
 
@@ -160,7 +149,7 @@ public class GestorCliente {
      * @param dni
      */
     public void buscarClienteDNI(String dni){
-        for(Cliente cliente : clientes.values()){
+        for(Cliente cliente : repositorio.clientes.values()){
             if(cliente.getDni().equals(dni)){
                 System.out.println("Cliente encontrado: ");
                 System.out.println("ID: " + cliente.getId());
@@ -168,21 +157,22 @@ public class GestorCliente {
                 System.out.println("DNI: " + cliente.getDni());
                 System.out.println("Email: " + cliente.getEmail());
                 System.out.println("Teléfono: " + cliente.getTelefono());
+            }else{
+                System.out.println("ERROR: No se encontró ningún cliente con DNI " + dni + ".");
             }
         }
-        System.out.println("ERROR: No se encontró ningún cliente con DNI " + dni + ".");
     }
 
     /**
      * Método para listar todos los clientes dentro de la memoria.
      */
     public void listarClientes(){
-        if (clientes.isEmpty()){
+        if (repositorio.clientes.isEmpty()){
             System.out.println("ERROR: No hay usuarios que visualizar.");
         }
         System.out.printf("|%4s |%-15s |%-10s |%-20s |%-10s|\n", "ID", "Nombre", "DNI", "Email", "Teléfono");
         System.out.println("------|----------------|-----------|---------------------|----------|");
-        clientes.forEach((id, cliente) -> {
+        repositorio.clientes.forEach((id, cliente) -> {
             System.out.printf("|%2d |%-15s |%-10s |%-20s |%-10s|\n",
                     cliente.getId(), cliente.getNombre() + " " + cliente.getApellidos(),
                     cliente.getDni(), cliente.getEmail(), cliente.getTelefono());

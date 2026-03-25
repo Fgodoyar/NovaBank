@@ -2,6 +2,7 @@ package org.service;
 
 import org.model.Cliente;
 import org.model.Cuenta;
+import org.repositorio.Repositorio;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -16,14 +17,16 @@ public class GestorCuenta {
      * Atributos de la clase.
      */
     private Map<String, Cuenta> cuentas;
-    private GestorCliente gestorClientes = new GestorCliente();
+    private Repositorio repositorio;
+    private GestorCliente gestorClientes;
     private static int contador = 0;
 
     /**
-     * Constructor vacío
+     * Constructor de la clase que usaremos para trasladar los datos de la memoria.
      */
-    public GestorCuenta() {
-        this.cuentas = new HashMap<>();
+    public GestorCuenta(Repositorio repositorio, GestorCliente gestorClientes) {
+        this.repositorio = repositorio;
+        this.gestorClientes = gestorClientes;
     }
 
     /**
@@ -53,26 +56,24 @@ public class GestorCuenta {
      * En caso de que el cliente no exista en el mapa clientes, saltará un error por consola.
      * @param id_titular
      */
-    public void crearCuenta(int id_titular){
-        for(Cliente cliente : gestorClientes.getClientes().values()){
-            if(cliente.getId() == id_titular){
-                Cuenta cuenta = new Cuenta();
-                String iban = generarIBAN();
-                LocalDate fecha_creacion = LocalDate.now();
-
-                cuenta.setNumero_cuenta(iban);
-                cuenta.setCliente_id(cliente.getId());
-                cuenta.setTitular(cliente.getNombre() + " " + cliente.getApellidos());
-                cuenta.setSaldo(BigDecimal.ZERO);
-                cuenta.setFecha_creacion(fecha_creacion);
-
-                cuentas.put(cuenta.getNumero_cuenta(), cuenta);
-                System.out.println("Cuenta creada correctamente.");
-                System.out.println("Número de cuenta: " + cuenta.getNumero_cuenta());
-            }else {
-                System.out.println("ERROR: El ID no está registrado en la base de datos.");
-            }
+    public void crearCuenta(long id_titular){
+        Cliente cliente = gestorClientes.buscarClienteID(id_titular);
+        if(cliente == null){
+            throw new IllegalArgumentException("ERROR: No hay clientes registrados");
         }
+        Cuenta cuenta = new Cuenta();
+        String iban = generarIBAN();
+        LocalDate fecha_creacion = LocalDate.now();
+        cuenta.setNumero_cuenta(iban);
+        cuenta.setCliente_id(cliente.getId());
+        cuenta.setTitular(cliente.getNombre() + " " + cliente.getApellidos());
+        cuenta.setSaldo(BigDecimal.ZERO);
+        cuenta.setFecha_creacion(fecha_creacion);
+
+        repositorio.guardarCuenta(cuenta);
+        System.out.println("Cuenta creada correctamente.");
+        System.out.println("Número de cuenta: " + cuenta.getNumero_cuenta());
+
     }
 
     /**
@@ -81,16 +82,15 @@ public class GestorCuenta {
      * En caso contrario, mostrará un error por consola.
      * @param id_titular
      */
-    public void listarCuentas(int id_titular){
-        for(Cuenta cuenta : cuentas.values()){
-            if (cuenta.getCliente_id() == id_titular){
-                System.out.println("Cuentas del cliente: " + cuenta.getTitular() + ":");
-                System.out.printf("|%-22s |%-10s|\n", "Número de cuenta", "Saldo");
-                System.out.println("|--------------------|-----------|");
-                System.out.printf("|%-22s |%-10s|\n", cuenta.getNumero_cuenta(), cuenta.getSaldo());
-            }else {
+    public void listarCuentas(long id_titular){
+        for(Cuenta cuenta : repositorio.cuentas.values()){
+            if (!(cuenta.getCliente_id() == id_titular)){
                 System.out.println("ERROR: El ID no está registrado en la base de datos.");
             }
+            System.out.println("Cuentas del cliente: " + cuenta.getTitular() + ":");
+            System.out.printf("|%-22s |%-10s|\n", "Número de cuenta", "Saldo");
+            System.out.println("|-----------------------|----------|");
+            System.out.printf("|%-22s |%-10s|\n", cuenta.getNumero_cuenta(), cuenta.getSaldo());
         }
     }
 
@@ -101,15 +101,14 @@ public class GestorCuenta {
      * @param numeroCuenta
      */
     public void informacionCuenta(String numeroCuenta){
-        for(Cuenta cuenta : cuentas.values()){
-            if (cuenta.getNumero_cuenta().equals(numeroCuenta)){
-                System.out.println("Número de cuenta: " + cuenta.getNumero_cuenta());
-                System.out.println("Titular: " + cuenta.getTitular());
-                System.out.println("Saldo: " + cuenta.getSaldo());
-                System.out.println("Fecha de creación: " + cuenta.getFecha_creacion());
-            }else {
+        for(Cuenta cuenta : repositorio.cuentas.values()){
+            if (!(cuenta.getNumero_cuenta().equals(numeroCuenta))){
                 System.out.println("El número no está registrado en la base de datos.");
             }
+            System.out.println("Número de cuenta: " + cuenta.getNumero_cuenta());
+            System.out.println("Titular: " + cuenta.getTitular());
+            System.out.println("Saldo: " + cuenta.getSaldo());
+            System.out.println("Fecha de creación: " + cuenta.getFecha_creacion());
         }
     }
 }
